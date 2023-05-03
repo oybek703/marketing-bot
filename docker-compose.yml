@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  bot:
+    build: .
+    image: marketing-bot
+    container_name: marketing-bot
+    volumes:
+       - .:/usr/src/service
+    working_dir: /usr/src/service
+    command: npm run start:dev
+
