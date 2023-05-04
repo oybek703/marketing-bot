@@ -1,6 +1,6 @@
 FROM node:18
 
-WORKDIR /opt/app
+WORKDIR /usr/app
 
 ADD package*.json ./
 

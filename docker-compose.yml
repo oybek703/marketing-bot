@@ -6,7 +6,8 @@ services:
     image: marketing-bot
     container_name: marketing-bot
     volumes:
-       - .:/usr/src/service
-    working_dir: /usr/src/service
+       - .:/usr/app
+       - /usr/app/node_modules
+    working_dir: /usr/app
     command: npm run start:dev
 
