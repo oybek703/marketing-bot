@@ -1,14 +1,16 @@
-.DEFAULT_GOAL := start
-.PHONY: all start restart stop
+.PHONY: start restart clean
 
-all: start restart
+all: start
 
-start:
+node_modules:
+	@npm install
+
+start: node_modules
 	docker-compose up
 
 restart:
 	docker-compose restart
 
-stop:
-	docker-compose stop
+clean:
+	docker-compose down
 
