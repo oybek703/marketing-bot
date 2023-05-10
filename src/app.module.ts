@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common'
-import { AppController } from './app.controller'
-import { AppService } from './app.service'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TelegrafModule } from 'nestjs-telegraf'
 import { getBotConfig } from './configs/bot.config'
+import { ContactService } from './contact/contact.service'
+import { ContactModule } from './contact/contact.module'
 
 @Module({
   imports: [
@@ -11,9 +11,9 @@ import { getBotConfig } from './configs/bot.config'
     TelegrafModule.forRootAsync({
       inject: [ConfigService],
       useFactory: getBotConfig
-    })
+    }),
+    ContactModule
   ],
-  controllers: [AppController],
-  providers: [AppService]
+  providers: [ContactService]
 })
 export class AppModule {}
