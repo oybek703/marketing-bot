@@ -3,8 +3,7 @@ import { Ctx, InjectBot, Start, TELEGRAF_STAGE, Update } from 'nestjs-telegraf'
 import { Scenes, Telegraf } from 'telegraf'
 import { BotContext } from '../interfaces/context.interfaces'
 import { ContactWizard } from './scenes/wizards/contact.wizard'
-import { contactWizardId, LanguageTexts } from '../constants'
-import { languageKeyboard } from './contact.keyboards'
+import { contactWizardId } from '../constants'
 
 @Update()
 export class ContactService implements OnModuleInit {

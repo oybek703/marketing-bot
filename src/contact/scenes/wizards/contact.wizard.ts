@@ -28,11 +28,10 @@ export class ContactWizard extends Scenes.WizardScene<BotContext> {
       composer.on(message('text'), async ctx => {
         const { first_name, username, last_name, id } = ctx.message.from
         const { startPayload } = ctx
-        // TODO These lines then should be uncommented
-        // if (!startPayload) {
-        //   await ctx.replyWithHTML(ctx.i18n.t(LanguageTexts.invalidLinkError))
-        //   return
-        // }
+        if (!startPayload) {
+          await ctx.replyWithHTML(ctx.i18n.t(LanguageTexts.error))
+          return ctx.scene.leave()
+        }
         if (!ctx.session.users) ctx.session.users = {}
         ctx.session.users[id] = {
           link: startPayload,
