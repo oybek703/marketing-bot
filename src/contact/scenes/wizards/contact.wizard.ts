@@ -16,14 +16,14 @@ export class ContactWizard extends Scenes.WizardScene<BotContext> {
     )
   }
 
-  static createComposer = (handler: (composer: Composer<BotContext>) => void) => {
+  static createComposer(handler: (composer: Composer<BotContext>) => void) {
     const composer = new Composer<BotContext>()
     handler(composer)
     return composer
   }
 
   // step-1
-  static startConversation = (): Composer<BotContext> => {
+  static startConversation(): Composer<BotContext> {
     return ContactWizard.createComposer(composer => {
       composer.on(message('text'), async ctx => {
         const { first_name, username, last_name, id } = ctx.message.from
@@ -50,7 +50,7 @@ export class ContactWizard extends Scenes.WizardScene<BotContext> {
   }
 
   // step-2
-  static chooseLanguage = (): Composer<BotContext> => {
+  static chooseLanguage(): Composer<BotContext> {
     return ContactWizard.createComposer(composer => {
       composer.on(message('text'), async ctx => {
         const availableLanguages = [LanguageTexts.ruLang, LanguageTexts.uzLang]
@@ -88,7 +88,7 @@ export class ContactWizard extends Scenes.WizardScene<BotContext> {
   }
 
   // step-3
-  static checkPhone1 = (): Composer<BotContext> => {
+  static checkPhone1(): Composer<BotContext> {
     return ContactWizard.createComposer(composer => {
       composer.on(message('text'), async ctx => {
         const userPhoneNumber = ctx.message.text
@@ -115,7 +115,7 @@ export class ContactWizard extends Scenes.WizardScene<BotContext> {
   }
 
   // step-4
-  static checkPhone2 = (): Composer<BotContext> => {
+  static checkPhone2(): Composer<BotContext> {
     return ContactWizard.createComposer(composer => {
       composer.on(message('text'), async ctx => {
         const { id } = ctx.message.from
