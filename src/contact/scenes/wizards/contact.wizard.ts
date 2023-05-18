@@ -18,6 +18,20 @@ export class ContactWizard extends Scenes.WizardScene<BotContext> {
 
   static createComposer(handler: (composer: Composer<BotContext>) => void) {
     const composer = new Composer<BotContext>()
+    composer.start((ctx, next) => {
+      const { startPayload } = ctx
+      const { id: userId } = ctx.from
+      const { users } = ctx.session
+      if (users && users[userId]) {
+        const { link } = users[userId]
+        if (link !== startPayload) {
+          ctx.scene.leave()
+          ctx.session.users = {}
+          return ctx.scene.reenter()
+        }
+      }
+      return next()
+    })
     handler(composer)
     return composer
   }
@@ -135,6 +149,7 @@ export class ContactWizard extends Scenes.WizardScene<BotContext> {
           ctx.session.users[id] = { ...users[id], phone: confirmPhoneNumber }
           await ctx.reply(thanksMessage)
           console.log(ctx.session.users[id])
+          ctx.session.users = {}
           return ctx.scene.leave()
         } else {
           await ctx.reply(answerText1)

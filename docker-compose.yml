@@ -1,13 +1,30 @@
 version: '3'
 
 services:
+  redis-server:
+    image: redis:7.2-rc2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-server:/usr/redis-server
   bot:
     build: .
     image: marketing-bot
+    depends_on:
+      - redis-server
     container_name: marketing-bot
+    environment:
+      REDIS_HOST: redis-server
+      REDIS_PORT: 6379
+    links:
+       - redis-server
     volumes:
        - .:/usr/app
        - /usr/app/node_modules
     working_dir: /usr/app
     command: npm run start:dev
 
+volumes:
+    redis-server:
+        driver: local
