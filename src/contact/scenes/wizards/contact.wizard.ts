@@ -109,6 +109,7 @@ export class ContactWizard extends Scenes.WizardScene<BotContext> {
         const apiRes = await this.apiService.getProduct(productId)
         if (!apiRes) {
           await ctx.reply(productNotFoundText, Markup.removeKeyboard())
+          ctx.session.users = {}
           return ctx.scene.leave()
         }
         let productData = apiRes.data.ru
