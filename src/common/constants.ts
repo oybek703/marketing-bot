@@ -7,9 +7,19 @@ export enum LanguageTexts {
   getInfo = 'getInfo',
   introduceText = 'introduceText',
   sendPhoneNumber = 'sendPhoneNumber',
-  sendPhoneBtnText = 'sendPhoneBtnText',
   confirmPhoneNumber = 'confirmPhoneNumber',
-  thanksMessage = 'thanksMessage'
+  thanksMessage = 'thanksMessage',
+  productNotFound = 'productNotFound',
+  waitText = 'waitText'
+}
+
+export enum EnvVariables {
+  botToken = 'BOT_TOKEN',
+  redisHost = 'REDIS_HOST',
+  redisPort = 'REDIS_PORT',
+  apiHost = 'API_HOST',
+  apiAuthUsername = 'API_AUTH_USERNAME',
+  apiAuthPassword = 'API_AUTH_PASSWORD'
 }
 
 export const contactWizardId = 'contact-wizard-id'

@@ -1,4 +1,7 @@
 import { Module } from '@nestjs/common'
+import { ContactWizard } from './scenes/wizards/contact.wizard'
 
-@Module({})
+@Module({
+  providers: [ContactWizard]
+})
 export class ContactModule {}

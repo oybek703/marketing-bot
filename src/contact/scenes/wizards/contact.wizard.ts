@@ -1,12 +1,17 @@
-import { contactWizardId, infoCallBackData, LanguageTexts } from '../../../constants'
-import { BotContext } from '../../../interfaces/context.interfaces'
+import { contactWizardId, infoCallBackData, LanguageTexts } from '../../../common/constants'
+import { BotContext } from '../../../common/interfaces/context.interfaces'
 import { Composer, Markup, Scenes } from 'telegraf'
 import { message } from 'telegraf/filters'
 import { languageKeyboard } from '../../contact.keyboards'
 import { i18n } from '../../../configs/i18n.config'
+import { ApiService } from '../../../api/api.service'
+import { unlink, writeFile } from 'fs/promises'
+import { randomUUID } from 'crypto'
+import { join } from 'path'
 
 export class ContactWizard extends Scenes.WizardScene<BotContext> {
-  constructor() {
+  private static apiService: ApiService
+  constructor(apiService: ApiService) {
     super(
       contactWizardId,
       ContactWizard.startConversation(),
@@ -14,6 +19,24 @@ export class ContactWizard extends Scenes.WizardScene<BotContext> {
       ContactWizard.checkPhone1(),
       ContactWizard.checkPhone2()
     )
+    ContactWizard.apiService = apiService
+  }
+
+  protected static async downloadAndProcessImage(url: string, handler: (localFilePath: string) => Promise<void>) {
+    const mimeType = url.split('.').pop() || 'png'
+    const filename = `${randomUUID()}.${mimeType}`
+    const localFilePath = join(process.cwd(), filename)
+    try {
+      const response = await fetch(url)
+      const blob = await response.blob()
+      const arrayBuffer = await blob.arrayBuffer()
+      const buffer = Buffer.from(arrayBuffer)
+      await writeFile(filename, buffer)
+      await handler(localFilePath)
+      await unlink(localFilePath)
+    } catch (e) {
+      await unlink(localFilePath)
+    }
   }
 
   static createComposer(handler: (composer: Composer<BotContext>) => void) {
@@ -75,15 +98,36 @@ export class ContactWizard extends Scenes.WizardScene<BotContext> {
         }
         ctx.scene.session.contactLang = contactLang
         ctx.scene.session.contactLang = contactLang
-        let answerText = ctx.i18n.t(LanguageTexts.adText)
-        let answerBtnText = ctx.i18n.t(LanguageTexts.getInfo)
+        let productNotFoundText = ctx.i18n.t(LanguageTexts.productNotFound)
+        let waitText = ctx.i18n.t(LanguageTexts.waitText)
         if (contactLang === LanguageTexts.uzLang) {
-          answerText = i18n.t('uz', LanguageTexts.adText)
+          productNotFoundText = i18n.t('uz', LanguageTexts.productNotFound)
+          waitText = i18n.t('uz', LanguageTexts.waitText)
+        }
+        let answerBtnText = ctx.i18n.t(LanguageTexts.getInfo)
+        const productId = ctx.session.users[ctx.message.from.id].link
+        const apiRes = await this.apiService.getProduct(productId)
+        if (!apiRes) {
+          await ctx.reply(productNotFoundText, Markup.removeKeyboard())
+          return ctx.scene.leave()
+        }
+        let productData = apiRes.data.ru
+        let caption = productData.description
+        if (contactLang === LanguageTexts.uzLang) {
+          productData = apiRes.data.uz
+          caption = productData.description
           answerBtnText = i18n.t('uz', LanguageTexts.getInfo)
         }
-        await ctx.replyWithPhoto('https://repost.uz/storage/uploads/6315-1653046948-adves-post-material.jpeg', {
-          caption: answerText,
-          ...Markup.inlineKeyboard([[{ text: answerBtnText, callback_data: infoCallBackData }]])
+        await ContactWizard.downloadAndProcessImage(productData.poster_url, async localFilePath => {
+          const { message_id: waitMessageId } = await ctx.reply(waitText, Markup.removeKeyboard())
+          await ctx.deleteMessage(waitMessageId)
+          await ctx.replyWithPhoto(
+            { source: localFilePath },
+            {
+              caption,
+              ...Markup.inlineKeyboard([[{ text: answerBtnText, callback_data: infoCallBackData }]])
+            }
+          )
         })
       })
       composer.action(infoCallBackData, async ctx => {

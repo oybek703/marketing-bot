@@ -4,6 +4,8 @@ import { TelegrafModule } from 'nestjs-telegraf'
 import { getBotConfig } from './configs/bot.config'
 import { ContactService } from './contact/contact.service'
 import { ContactModule } from './contact/contact.module'
+import { ApiModule } from './api/api.module'
+import { getApiConfig } from './configs/api.config'
 
 @Module({
   imports: [
@@ -12,7 +14,11 @@ import { ContactModule } from './contact/contact.module'
       inject: [ConfigService],
       useFactory: getBotConfig
     }),
-    ContactModule
+    ContactModule,
+    ApiModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: getApiConfig
+    })
   ],
   providers: [ContactService]
 })

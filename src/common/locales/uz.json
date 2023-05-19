@@ -7,5 +7,7 @@
     "sendPhoneNumber": "Telefon raqamingizni 998********* formatda jo'nating",
     "sendPhoneBtnText": "Telefon raqamni jo'natish",
     "confirmPhoneNumber": "Telefon raqamini tasdiqlang:",
-    "thanksMessage": "Murojaatingiz uchun rahmat, operatorimiz tez orada siz bilan bog'lanadi."
+    "thanksMessage": "Murojaatingiz uchun rahmat, operatorimiz tez orada siz bilan bog'lanadi.",
+    "productNotFound": "Error! Mavjud bo'lmagan mahsulot.",
+    "waitText": "Iltimos kuting..."
 }
