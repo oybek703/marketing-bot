@@ -12,20 +12,17 @@ export class ApiService {
   ) {}
 
   async getAuthData(): Promise<IApiAuthData> {
-    try {
-      const { username, host, password } = this.options
-      const res = await fetch(`${host}/api/login`, {
-        method: 'POST',
-        body: JSON.stringify({ username, password }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      const { data } = await res.json()
-      return data
-    } catch (e) {
-      throw new Error('API auth error.')
-    }
+    const { username, host, password } = this.options
+    const res = await fetch(`${host}/api/login`, {
+      method: 'POST',
+      body: JSON.stringify({ username, password }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    if (!res.ok) throw new Error('API auth error.')
+    const { data } = await res.json()
+    return data
   }
 
   async getToken(): Promise<string> {
@@ -33,9 +30,9 @@ export class ApiService {
     if (!oldAuthData) {
       const newAuthData = await this.getAuthData()
       await this.cache.set(apiAuthCacheData, newAuthData, 86400 * 1000)
-      return newAuthData.access_token
+      return newAuthData?.access_token
     }
-    return oldAuthData.access_token
+    return oldAuthData?.access_token
   }
 
   async getProduct(code: string): Promise<IApiData | undefined> {

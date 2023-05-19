@@ -49,7 +49,7 @@ export class ContactWizard extends Scenes.WizardScene<BotContext> {
         const { link } = users[userId]
         if (link !== startPayload) {
           ctx.scene.leave()
-          ctx.session.users = {}
+          delete ctx.session.users[userId]
           return ctx.scene.reenter()
         }
       }
@@ -97,7 +97,6 @@ export class ContactWizard extends Scenes.WizardScene<BotContext> {
           return
         }
         ctx.scene.session.contactLang = contactLang
-        ctx.scene.session.contactLang = contactLang
         let productNotFoundText = ctx.i18n.t(LanguageTexts.productNotFound)
         let waitText = ctx.i18n.t(LanguageTexts.waitText)
         if (contactLang === LanguageTexts.uzLang) {
@@ -109,7 +108,7 @@ export class ContactWizard extends Scenes.WizardScene<BotContext> {
         const apiRes = await this.apiService.getProduct(productId)
         if (!apiRes) {
           await ctx.reply(productNotFoundText, Markup.removeKeyboard())
-          ctx.session.users = {}
+          delete ctx.session.users[ctx.from.id]
           return ctx.scene.leave()
         }
         let productData = apiRes.data.ru
@@ -193,8 +192,7 @@ export class ContactWizard extends Scenes.WizardScene<BotContext> {
         if (phoneNumber === confirmPhoneNumber) {
           ctx.session.users[id] = { ...users[id], phone: confirmPhoneNumber }
           await ctx.reply(thanksMessage)
-          console.log(ctx.session.users[id])
-          ctx.session.users = {}
+          delete ctx.session.users[id]
           return ctx.scene.leave()
         } else {
           await ctx.reply(answerText1)
